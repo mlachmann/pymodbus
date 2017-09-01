@@ -33,9 +33,14 @@ class ModbusClientProtocol(asyncio.Protocol, AsyncModbusClientMixin):
         return asyncio.Future()
 
     def resolve_future(self, f, result):
+        if f.cancelled():
+            _logger.debug("Reply of canceled request: " + str(result))
+            return
         f.set_result(result)
 
     def raise_future(self, f, exc):
+        if f.cancelled():
+            return
         f.set_exception(exc)
 
 
